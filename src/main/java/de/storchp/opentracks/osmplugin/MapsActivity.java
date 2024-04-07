@@ -311,14 +311,14 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         drawTableLine(tableLayout);
         long differenceInMilliseconds = nextSegment.getTime().getTime() - selectedSegmentInTrack.getTime().getTime();
 
-// Convert the difference from milliseconds to minutes
+        // Convert the difference from milliseconds to minutes
         long differenceInMinutes = differenceInMilliseconds / (60 * 1000);
 
-// If you want to get the difference in a specific String format like "XX min XX sec", you can do:
+        // If you want to get the difference in a specific String format like "XX min XX sec", you can do:
         long differenceInSeconds = differenceInMilliseconds / 1000; // total seconds
         long seconds = differenceInSeconds % 60; // remaining seconds
         String formattedDifference = Math.abs(differenceInMinutes) + " min " + Math.abs(seconds) + " sec";
-//        Log.d("checkoutput",String.valueOf(selectedSegmentInTrack.getDistance()));
+
         TableRow headerRow = new TableRow(this);
         headerRow.setLayoutParams(new TableRow.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -340,7 +340,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         double totalDistanceKm = totalDistanceMeter / 1000; // Convert meters to kilometers
         String formattedTotalDistance = String.format("%.2f", totalDistanceKm);
 
-        double avgSpeedMeterPerSecond = selectedSegmentInTrack.getSpeed();
+        double avgSpeedMeterPerSecond = trackToBePopulated.avgMovingSpeedMeterPerSecond();
         double avgSpeedKmPerHour = avgSpeedMeterPerSecond * 3.6; // Convert m/s to km/h
         String formattedAvgSpeed = String.format("%.2f", avgSpeedKmPerHour);
 
