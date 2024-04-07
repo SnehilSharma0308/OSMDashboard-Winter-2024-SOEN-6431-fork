@@ -169,10 +169,10 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
 
         if (trackColorMode == TrackColorMode.BY_SPEED) {
             for (Segment segment : segments) {
-                PathLayer polyline = new PathLayer(map, segment.color, Math.max(strokeWidth, 4));
-                polyline.addPoint(segment.start);
-                polyline.addPoint(segment.end);
-                map.layers().add(polyline);
+                PathLayer line = new PathLayer(map, segment.color, Math.max(strokeWidth, 4));
+                line.addPoint(segment.start);
+                line.addPoint(segment.end);
+                map.layers().add(line);
             }
         } else {
             trackColor = colorCreator.nextColor();
@@ -211,12 +211,12 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         startMarker.setMarker(startMarkerSymbol);
 
 
-        MarkerItem endMarker = new MarkerItem("End", "End", segment.end);
-        endMarker.setRotation(MapUtils.rotateWith(mapMode, movementDirection));
-        endMarker.setMarker(endMarkerSymbol);
+        MarkerItem segmentEndMarker = new MarkerItem("End", "End", segment.end);
+        segmentEndMarker.setRotation(MapUtils.rotateWith(mapMode, movementDirection));
+        segmentEndMarker.setMarker(endMarkerSymbol);
 
         waypointsLayer.addItem(startMarker);
-        waypointsLayer.addItem(endMarker);
+        waypointsLayer.addItem(segmentEndMarker);
 
         map.layers().add(polyline);
     }
@@ -850,7 +850,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
 
     private List<Segment> getSegments() {
         List<Segment> segments = new ArrayList<>();
-        int trackColor = colorCreator.nextColor();
+        int segmentColor = colorCreator.nextColor();
         double average = storedTrackPointsBySegments.calcAverageSpeed();
         double maxSpeed = storedTrackPointsBySegments.calcMaxSpeed();
         double averageToMaxSpeed = maxSpeed - average;
@@ -867,7 +867,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
             if (trackColorMode == TrackColorMode.BY_SPEED) {
                 segments.add(new Segment(startPoint, endPoint, MapUtils.getTrackColorBySpeed(average, averageToMaxSpeed, endTrackPoint)));
             } else {
-                segments.add(new Segment(startPoint, endPoint, trackColor));
+                segments.add(new Segment(startPoint, endPoint, segmentColor));
             }
         }
         return segments;
