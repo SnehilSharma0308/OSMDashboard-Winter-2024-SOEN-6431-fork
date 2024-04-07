@@ -198,7 +198,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
                 false,
                 MarkerSymbol.HotspotPlace.BOTTOM_CENTER
         );
-
+        
         MarkerSymbol endMarkerSymbol = MapUtils.createMarkerSymbol(
                 this,
                 R.drawable.ic_marker_green_pushpin_modern,
@@ -285,7 +285,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
 
                 String intentAction = getIntent().getAction();
                 if (Objects.nonNull(intentAction) && intentAction.equals(APIConstants.ACTION_DASHBOARD)) {
-                    displaySelectedTrailTable(selectedSegmentInTrack,nextSelectedSegment);
+                    displaySelectedTrailTable(selectedSegmentInTrack, nextSelectedSegment);
                 }
             }
         });
@@ -295,9 +295,9 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
     private TrackPoint findSegmentClosestToSelectedSegment(Segment closestSegment) {
         TrackPoint selectedSegmentInTrack = null;
         List<TrackPoint> storedSegments = storedTrackPointsBySegments.segments().get(0);
-        for(TrackPoint trackPoint: storedSegments){
+        for (TrackPoint trackPoint : storedSegments) {
             GeoPoint trackPointGeoPoint = trackPoint.getLatLong();
-            if(trackPointGeoPoint.getLatitude() == closestSegment.start.getLatitude() || trackPointGeoPoint.getLongitude() == closestSegment.start.getLongitude()){
+            if (trackPointGeoPoint.getLatitude() == closestSegment.start.getLatitude() || trackPointGeoPoint.getLongitude() == closestSegment.start.getLongitude()) {
                 selectedSegmentInTrack = trackPoint;
             }
         }
@@ -306,16 +306,13 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
     }
 
     private void displaySelectedTrailTable(TrackPoint selectedSegmentInTrack, TrackPoint nextSelectedSegment) {
-        TableLayout tableLayout = createTableLayout(selectedSegmentInTrack,nextSelectedSegment);
+        TableLayout tableLayout = createTableLayout(selectedSegmentInTrack, nextSelectedSegment);
 
         // Get the root layout of the activity
         ViewGroup rootLayout = findViewById(android.R.id.content);
 
         // Create layout parameters for the table
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.BOTTOM; // Position the table at the bottom of the screen
 
         // Set margins for the table layout (optional)
@@ -332,13 +329,10 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         rootLayout.addView(tableLayout, layoutParams);
     }
 
-    private TableLayout createTableLayout(TrackPoint selectedSegmentInTrack,TrackPoint nextSegment) {
+    private TableLayout createTableLayout(TrackPoint selectedSegmentInTrack, TrackPoint nextSegment) {
         // Create a new TableLayout
         TableLayout tableLayout = new TableLayout(this);
-        tableLayout.setLayoutParams(new TableLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
+        tableLayout.setLayoutParams(new TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         tableLayout.setBackgroundResource(R.drawable.ic_table_border); // Define a drawable resource for table borders
         populateSelectedTrailDetails(selectedSegmentInTrack, tableLayout, nextSegment);
@@ -360,10 +354,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         String formattedDifference = Math.abs(differenceInMinutes) + " min " + Math.abs(seconds) + " sec";
 //        Log.d("checkoutput",String.valueOf(selectedSegmentInTrack.getDistance()));
         TableRow headerRow = new TableRow(this);
-        headerRow.setLayoutParams(new TableRow.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
+        headerRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         // Create TextViews for header row
         TextView attributeHeader = createTableCell("Attribute");
@@ -395,8 +386,9 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         createTableRow("Time Taken", formattedDifference, tableLayout);
         createTableRow("Segment Number", String.valueOf(selectedSegmentInTrack.getTrackPointId()), tableLayout);
         createTableRow("Segment Speed", formattedSegmentSpeed + " km/h", tableLayout);
-        createTableRow("Slope", String.valueOf(getSlopePercentage(totalDistanceKm,trackToBePopulated.maxElevationMeter())), tableLayout);
+        createTableRow("Slope", String.valueOf(getSlopePercentage(totalDistanceKm, trackToBePopulated.maxElevationMeter())), tableLayout);
     }
+
     private double getSlopePercentage(double distance, float elevation) {
         // Slope percentage is (elevation change / horizontal distance) * 100
         double slopePercentage = (elevation / distance) * 100;
@@ -404,8 +396,10 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         // Format to xx.xx%
         return Math.round(slopePercentage * 100.0) / 100.0;
     }
-/** @author sadiq
-     *  Method to validate track information data
+
+    /**
+     * @author sadiq
+     * Method to validate track information data
      */
 
     private boolean validateDataFromTracksData(List<Track> tracksData) {
@@ -448,10 +442,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
 
     private void createTableRow(String headerName, String headerDetails, TableLayout tableLayout) {
         TableRow trailNameRow = new TableRow(this);
-        trailNameRow.setLayoutParams(new TableRow.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
+        trailNameRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView trailNameHeader = createTableCell(headerName);
         TextView trailNameValue = createTableCell(headerDetails);
@@ -465,9 +456,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
     private void drawTableLine(TableLayout tableLayout) {
         // Add a horizontal line
         View line = new View(this);
-        line.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                2 // Height of the line in pixels
+        line.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2 // Height of the line in pixels
         ));
         line.setBackgroundColor(Color.BLACK);
         tableLayout.addView(line);
@@ -476,11 +465,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
     private TextView createTableCell(String text) {
         // Create a TextView for a table cell
         TextView textView = new TextView(this);
-        textView.setLayoutParams(new TableRow.LayoutParams(
-                0,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                1f
-        ));
+        textView.setLayoutParams(new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         textView.setText(text);
         textView.setGravity(Gravity.CENTER);
         textView.setPadding(5, 5, 5, 5); // Add padding to the cell
@@ -538,7 +523,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         if (APIConstants.ACTION_DASHBOARD.equals(intent.getAction())) {
             ArrayList<Uri> uris = intent.getParcelableArrayListExtra(APIConstants.ACTION_DASHBOARD_PAYLOAD);
             protocolVersion = intent.getIntExtra(EXTRAS_PROTOCOL_VERSION, 1);
-                        tracksUri = APIConstants.getTracksUri(uris);
+            tracksUri = APIConstants.getTracksUri(uris);
             trackPointsUri = APIConstants.getTrackPointsUri(uris);
             waypointsUri = APIConstants.getWaypointsUri(uris);
             keepScreenOn(intent.getBooleanExtra(EXTRAS_SHOULD_KEEP_SCREEN_ON, false));
@@ -556,7 +541,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
                 map.getMapPosition().setPosition(waypoint.getLatLong());
                 map.getMapPosition().setZoomLevel(map.viewport().getMaxZoomLevel());
             });
-}
+        }
     }
 
     private class OpenTracksContentObserver extends ContentObserver {
@@ -609,9 +594,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
     }
 
     public void navigateUp() {
-        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
-                && isOpenTracksRecordingThisTrack
-                && PreferencesUtils.isPipEnabled()) {
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) && isOpenTracksRecordingThisTrack && PreferencesUtils.isPipEnabled()) {
             enterPictureInPictureMode();
         } else {
             finish();
@@ -664,11 +647,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
             return null;
         }
         var mapsCount = new AtomicInteger(0);
-        mapFiles.stream()
-                .filter(uri -> DocumentFile.isDocumentUri(this, uri))
-                .map(uri -> DocumentFile.fromSingleUri(this, uri))
-                .filter(documentFile -> documentFile != null && documentFile.canRead())
-                .forEach(documentFile -> readMapFile(tileSource, mapsCount, documentFile));
+        mapFiles.stream().filter(uri -> DocumentFile.isDocumentUri(this, uri)).map(uri -> DocumentFile.fromSingleUri(this, uri)).filter(documentFile -> documentFile != null && documentFile.canRead()).forEach(documentFile -> readMapFile(tileSource, mapsCount, documentFile));
 
         if (mapsCount.get() == 0 && !mapFiles.isEmpty()) {
             Toast.makeText(this, R.string.error_loading_offline_map, Toast.LENGTH_LONG).show();
@@ -721,12 +700,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
             map.setTheme(getRenderTheme());
 
         } else if (BuildConfig.offline) {
-            new AlertDialog.Builder(this)
-                    .setIcon(R.drawable.ic_logo_color_24dp)
-                    .setTitle(R.string.app_name)
-                    .setMessage(R.string.no_map_configured)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .create().show();
+            new AlertDialog.Builder(this).setIcon(R.drawable.ic_logo_color_24dp).setTitle(R.string.app_name).setMessage(R.string.no_map_configured).setPositiveButton(android.R.string.ok, null).create().show();
         } else if (PreferencesUtils.getOnlineMapConsent()) {
             setOnlineTileLayer();
         } else {
@@ -753,20 +727,12 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         var message = new SpannableString(getString(R.string.online_map_consent));
         Linkify.addLinks(message, Linkify.ALL);
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setIcon(R.drawable.ic_logo_color_24dp)
-                .setTitle(R.string.app_name)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok, (dialog1, which) -> {
+        AlertDialog dialog = new AlertDialog.Builder(this).setIcon(R.drawable.ic_logo_color_24dp).setTitle(R.string.app_name).setMessage(message).setPositiveButton(android.R.string.ok, (dialog1, which) -> {
             PreferencesUtils.setOnlineMapConsent(true);
             MapsActivity.this.recreate();
-        })
-                .setNegativeButton(android.R.string.cancel, null)
-                .create();
+        }).setNegativeButton(android.R.string.cancel, null).create();
         dialog.show();
-        ((TextView) Objects.requireNonNull(dialog.findViewById(android.R.id.message),
-                "An AlertDialog must have a TextView with id.message"))
-                .setMovementMethod(LinkMovementMethod.getInstance());
+        ((TextView) Objects.requireNonNull(dialog.findViewById(android.R.id.message), "An AlertDialog must have a TextView with id.message")).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**
@@ -899,11 +865,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
             TrackColorMode trackColorMode = PreferencesUtils.getTrackColorMode();
 
             if (trackColorMode == TrackColorMode.BY_SPEED) {
-                segments.add(new Segment(
-                        startPoint,
-                        endPoint,
-                        MapUtils.getTrackColorBySpeed(average, averageToMaxSpeed, endTrackPoint)
-                ));
+                segments.add(new Segment(startPoint, endPoint, MapUtils.getTrackColorBySpeed(average, averageToMaxSpeed, endTrackPoint)));
             } else {
                 segments.add(new Segment(startPoint, endPoint, trackColor));
             }
@@ -1032,7 +994,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         if (polylinesLayer != null) {
             layers.remove(polylinesLayer);
         }
-        if(polyline != null){
+        if (polyline != null) {
             map.layers().remove(polyline);
         }
         polylinesLayer = new GroupLayer(map);
@@ -1062,15 +1024,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
 
     public void updateDebugTrackPoints() {
         if (PreferencesUtils.isDebugTrackPoints()) {
-            binding.map.trackpointsDebugInfo.setText(
-                    getString(R.string.debug_trackpoints_info,
-                            trackPointsDebug.getTrackpointsReceived(),
-                            trackPointsDebug.getTrackpointsInvalid(),
-                            trackPointsDebug.getTrackpointsDrawn(),
-                            trackPointsDebug.getTrackpointsPause(),
-                            trackPointsDebug.getSegments(),
-                            protocolVersion
-                    ));
+            binding.map.trackpointsDebugInfo.setText(getString(R.string.debug_trackpoints_info, trackPointsDebug.getTrackpointsReceived(), trackPointsDebug.getTrackpointsInvalid(), trackPointsDebug.getTrackpointsDrawn(), trackPointsDebug.getTrackpointsPause(), trackPointsDebug.getSegments(), protocolVersion));
         } else {
             binding.map.trackpointsDebugInfo.setText("");
         }
@@ -1145,10 +1099,7 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
         if (!tracks.isEmpty()) {
             var statistics = new TrackStatistics(tracks);
             removeStatisticElements();
-            PreferencesUtils.getStatisticElements()
-                    .stream()
-                    .sorted(comparingInt(StatisticElement::ordinal))
-                    .forEach(se -> addStatisticElement(se.getText(this, statistics)));
+            PreferencesUtils.getStatisticElements().stream().sorted(comparingInt(StatisticElement::ordinal)).forEach(se -> addStatisticElement(se.getText(this, statistics)));
         }
     }
 
