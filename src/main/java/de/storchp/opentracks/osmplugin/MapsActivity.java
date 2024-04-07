@@ -165,27 +165,59 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
             map.layers().remove(polylinesLayer);
         }
 
-        int segmentColor = trackColor;
-        int currentStrokeWidth = Math.max(strokeWidth, 4);
-        polyline = new PathLayer(map, segmentColor, currentStrokeWidth);
+        TrackColorMode trackColorMode = PreferencesUtils.getTrackColorMode();
 
-        for (Segment segment : segments) {
-            polyline.addPoint(segment.start);
-            polyline.addPoint(segment.end);
+        if (trackColorMode == TrackColorMode.BY_SPEED) {
+            for (Segment segment : segments) {
+                PathLayer polyline = new PathLayer(map, segment.color, Math.max(strokeWidth, 4));
+                polyline.addPoint(segment.start);
+                polyline.addPoint(segment.end);
+                map.layers().add(polyline);
+            }
+        } else {
+            trackColor = colorCreator.nextColor();
+            int currentStrokeWidth = Math.max(strokeWidth, 4);
+            polyline = new PathLayer(map, trackColor, currentStrokeWidth);
+            for (Segment segment : segments) {
+                polyline.addPoint(segment.start);
+                polyline.addPoint(segment.end);
+            }
+            map.layers().add(polyline);
         }
-
-        map.layers().add(polyline);
     }
 
     private void drawSelectedSegment(Segment segment) {
-        if (polylinesLayer != null) {
-            map.layers().remove(polylinesLayer);
-        }
-
         int currentStrokeWidth = Math.max(strokeWidth, 4);
-        polyline = new PathLayer(map, colorCreator.nextColor(), currentStrokeWidth);
+        polyline = new PathLayer(map, Color.BLACK, currentStrokeWidth);
         polyline.addPoint(segment.start);
         polyline.addPoint(segment.end);
+
+        MarkerSymbol startMarkerSymbol = MapUtils.createMarkerSymbol(
+                this,
+                R.drawable.ic_marker_red_pushpin_modern,
+                false,
+                MarkerSymbol.HotspotPlace.BOTTOM_CENTER
+        );
+
+        MarkerSymbol endMarkerSymbol = MapUtils.createMarkerSymbol(
+                this,
+                R.drawable.ic_marker_green_pushpin_modern,
+                false,
+                MarkerSymbol.HotspotPlace.BOTTOM_CENTER
+        );
+
+        MarkerItem startMarker = new MarkerItem("Start", "Start", segment.start);
+        startMarker.setRotation(MapUtils.rotateWith(mapMode, movementDirection));
+        startMarker.setMarker(startMarkerSymbol);
+
+
+        MarkerItem endMarker = new MarkerItem("End", "End", segment.end);
+        endMarker.setRotation(MapUtils.rotateWith(mapMode, movementDirection));
+        endMarker.setMarker(endMarkerSymbol);
+
+        waypointsLayer.addItem(startMarker);
+        waypointsLayer.addItem(endMarker);
+
         map.layers().add(polyline);
     }
 
@@ -217,7 +249,6 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
             }
         });
 
-        // Get the intent that started this activity
         var intent = getIntent();
         if (intent != null) {
             onNewIntent(intent);
@@ -242,7 +273,10 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
 
             if (closestSegment != null) {
                 Log.d("MapsActivity", "Closest segment start: " + closestSegment.start.getLatitude() + "," + closestSegment.start.getLongitude() + " end: " + closestSegment.end.getLatitude() + "," + closestSegment.end.getLongitude());
-
+                resetMapData();
+                if (polylinesLayer != null) {
+                    map.layers().remove(polylinesLayer);
+                }
                 TrackPoint selectedSegmentInTrack = findSegmentClosestToSelectedSegment(closestSegment);
                 TrackPoint nextSelectedSegment = findSegmentClosestToSelectedSegment(nextSegment);
 
@@ -251,12 +285,13 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
 
                 String intentAction = getIntent().getAction();
                 if (Objects.nonNull(intentAction) && intentAction.equals(APIConstants.ACTION_DASHBOARD)) {
-                        displaySelectedTrailTable(selectedSegmentInTrack,nextSelectedSegment);
-                                    }
+                    displaySelectedTrailTable(selectedSegmentInTrack,nextSelectedSegment);
+                }
             }
         });
 
     }
+
     private TrackPoint findSegmentClosestToSelectedSegment(Segment closestSegment) {
         TrackPoint selectedSegmentInTrack = null;
         List<TrackPoint> storedSegments = storedTrackPointsBySegments.segments().get(0);
@@ -849,15 +884,29 @@ public class MapsActivity extends BaseActivity implements ItemizedLayer.OnItemGe
 
     private List<Segment> getSegments() {
         List<Segment> segments = new ArrayList<>();
+        int trackColor = colorCreator.nextColor();
+        double average = storedTrackPointsBySegments.calcAverageSpeed();
+        double maxSpeed = storedTrackPointsBySegments.calcMaxSpeed();
+        double averageToMaxSpeed = maxSpeed - average;
+
         for (int i = 0; i < trackPoints.size() - 1; i++) {
             TrackPoint startTrackPoint = trackPoints.get(i);
             TrackPoint endTrackPoint = trackPoints.get(i + 1);
 
-            // Directly use the GeoPoint from your TrackPoint class
             GeoPoint startPoint = startTrackPoint.getLatLong();
             GeoPoint endPoint = endTrackPoint.getLatLong();
 
-            segments.add(new Segment(startPoint, endPoint));
+            TrackColorMode trackColorMode = PreferencesUtils.getTrackColorMode();
+
+            if (trackColorMode == TrackColorMode.BY_SPEED) {
+                segments.add(new Segment(
+                        startPoint,
+                        endPoint,
+                        MapUtils.getTrackColorBySpeed(average, averageToMaxSpeed, endTrackPoint)
+                ));
+            } else {
+                segments.add(new Segment(startPoint, endPoint, trackColor));
+            }
         }
         return segments;
     }
